@@ -29,42 +29,59 @@ var Vireo = require('vireo');
 // load the via source code
 var viName = 'Main%2Egviweb';
 var viaPath = 'Eightball/Builds/Web Server/Configuration1/Eightball/Main.via.txt';
-var viaWithEnqueue = fs.readFileSync(viaPath, "utf8");
-var viaEnqueueInstruction = viaWithEnqueue.match(/^enqueue.*$/mg, "")[0];
-var via = viaWithEnqueue.replace(/^enqueue.*$/mg, "");
+var viaCode = fs.readFileSync(viaPath, "utf8");
 
-// create a new Vireo instance
-var vireo = new Vireo();
+// does the bulk of the Vireo work by creating a Vireo instance, loading the via text, and executing the runtime
+// this function assumes that the WebVI front panel has a String Control named 'Input' and a String Indicator named 'Output'
+var createVireoResponse = function (input, callback) {
+  // create a new Vireo instance
+  var vireo = new Vireo();
 
-// register some logging functions (only used for debugging)
-vireo.eggShell.setPrintFunction(console.log);
-vireo.eggShell.setPrintErrorFunction(console.error);
+  // register some logging functions (only used for debugging)
+  vireo.eggShell.setPrintFunction(console.log);
+  vireo.eggShell.setPrintErrorFunction(console.error);
 
-// load the via code into the runtime
-vireo.eggShell.loadVia(via);
-
-app.get("/eightball", function (request, response) {
-  // take the input parameter of the query string and write it to the String Control named Input
-  var input = JSON.stringify(request.query.input);
-  vireo.eggShell.writeJSON(viName, 'dataItem_Input', input);
+  // load the via code into the runtime
+  vireo.eggShell.loadVia(viaCode);
   
-  // run the via code and allow it to complete asynchronously
-  vireo.eggShell.loadVia(viaEnqueueInstruction);
+  // prepare the input string to write to the runtime
+  // we encode the string as JSON in order to safely pass the string into the Vireo runtime
+  // the runtime will decode the JSON before using so the result is that the string should pass through unchanged
+  var inputJSON = JSON.stringify(input);
+  vireo.eggShell.writeJSON(viName, 'dataItem_Input', inputJSON);
+  
+  // execute the WebVI asynchronously to allow network requests
+  // in general WebVIs should return quickly to avoid blocking the endpoint on the server
   (function runExecuteSlicesAsync() {
     var output;
     var status = vireo.eggShell.executeSlices(1000);
-    
     if (status > 0) {
       setImmediate(runExecuteSlicesAsync);
     } else {
-      
-      // take the value of the String Indicator named Output and return it as the response of the request
-      output = JSON.parse(vireo.eggShell.readJSON(viName, 'dataItem_Output'));
-      response.send({
-        output: output
-      });
+      // when the WebVI has finished running extract the value of the String Indicator named 'Output'
+      // extract as JSON to safely pass the string between Vireo and JS environment
+      // we then parse as JSON output so the end result is the string is passed unchanged to the callback function
+      var outputJSON = vireo.eggShell.readJSON(viName, 'dataItem_Output');
+      var output = JSON.parse(outputJSON);
+      callback(output);
     }
   }());
+};
+
+// the express endpoint that is serviced with Vireo
+// in this example we take the url query parameter named input as the string to pass to the WebVI
+// and we return a JSON object that has a single property called output which is the output string returned by the WebVI
+
+// we can of course customize which part of the request we pass to vireo, ie url query parameters, request body, headers, etc
+// as well as customize the HTTP method used, return format, etc
+app.get("/eightball", function (request, response) {
+  var input = request.query.input;
+  createVireoResponse(input, function (output) {
+    response.send({
+      output: output
+    });
+  });
+
 });
 
 // listen for requests :)
