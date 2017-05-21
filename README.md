@@ -1,27 +1,46 @@
-Welcome to the Glitch BETA
-=========================
+# Vireo Magic 8-Ball
 
-Click `Show` in the header to see your app live. Updates to your code will instantly deploy and update live.
+This example shows how the `vireo` npm package can be used to run a WebVI in a Node.js application. In this example we create a web server using the Express framework.
 
-**Glitch** is the friendly commmunity where you'll build the app of your dreams. Glitch lets you instantly create, remix, edit, and host an app, bot or site, and you can invite collaborators or helpers to simultaneously edit code with you.
+When the user visits a specific endpoint, the WebVI is run using inputs from the HTTP Request and the WebVI returns an output included in the HTTP Response.
 
-Find out more [about Glitch](https://glitch.com/about).
+## Dependencies
+- LabVIEW NXG 2.0 Beta
+- Node.js 6.X (Required for testing locally)
+- Glitch.com (Option for deploying)
+- Postman (Optional tool for testing API endpoints)
 
+## Testing the live demo
+The WebVI for the Magic 8-Ball can be seen as follows:
+![Main.gviweb showing a simple diagram that randomly returns a string from a set of possible strings](https://cdn.glitch.com/cfea0d4a-79ae-41a6-85f6-bba822e5a247%2Feightball_screenshot.png?1495405756951)
 
-Your Project
-------------
+The value passed to the Input control is ignored and a random string is returned in the output.
 
-On the front-end,
-- edit `public/client.js`, `public/style.css` and `views/index.html`
-- drag in `assets`, like images or music, to add them to your project
+The Express web application is configured to accept HTTP requests at the endpoint `/eightball`. The endpoint uses the parameter `input` from the url query string to pass to the WebVI. The string returned by the WebVI is added to an object as the parameter `output` and returned as JSON to the user.
 
-On the back-end,
-- your app starts at `server.js`
-- add frameworks and packages in `package.json`
-- safely store app secrets in `.env` (nobody can see this but you and people you invite)
+The code for the Express `/eightball` endpoint can be seen as follows:
 
+```javascript
+app.get("/eightball", function (request, response) {
+  var input = request.query.input;
+  createVireoResponse(input, function (output) {
+    response.send({
+      output: output
+    });
+  });
+});
+```
 
-Made by [Fog Creek](https://fogcreek.com/)
--------------------
+To access the WebVI we create a url that matches the endpoint:
 
-\ ゜o゜)ノ
+[`https://vireo-node-eightball.glitch.me/eightball`](https://vireo-node-eightball.glitch.me/eightball)
+
+Note: Here we ignore the query string parameter named input as we know the WebVI itself will ignore it as well.
+
+To create the required GET request we can paste the URL in the browser URL bar and hit enter. For methods other than GET
+
+When you visit the page you should see a randomly generated result similar to the following:
+
+```json
+{"output":"It is certain"}
+```

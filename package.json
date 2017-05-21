@@ -1,5 +1,5 @@
 {
-  "name": "vireo-node-express",
+  "name": "vireo-node-eightball",
   "version": "0.0.1",
   "description": "What am I about?",
   "main": "server.js",

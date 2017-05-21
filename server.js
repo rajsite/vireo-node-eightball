@@ -81,7 +81,6 @@ app.get("/eightball", function (request, response) {
       output: output
     });
   });
-
 });
 
 // listen for requests :)
