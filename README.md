@@ -1,4 +1,6 @@
 # Vireo Magic 8-Ball
+[![Running Vireo Magic 8-Ball Demo Link](https://img.shields.io/badge/Details-Demo_Link-green.svg)](https://vireo-node-eightball.glitch.me/eightball)
+[![Running Vireo Magic 8-Ball README Link](https://img.shields.io/badge/Details-README_Link-orange.svg)](https://github.com/rajsite/vireo-node-eightball#vireo-magic-8-ball)
 
 This example shows how the `vireo` npm package can be used to run a WebVI in a Node.js application. In this example we create a web server using the Express framework.
 
@@ -11,7 +13,8 @@ When the user visits a specific endpoint, the WebVI is run using inputs from the
 - Postman (Optional tool for testing API endpoints)
 
 ## Testing the live demo
-The WebVI for the Magic 8-Ball can be seen as follows:
+The `Main.gviweb` for the Magic 8-Ball can be seen as follows:
+
 ![Main.gviweb showing a simple diagram that randomly returns a string from a set of possible strings](https://cdn.glitch.com/cfea0d4a-79ae-41a6-85f6-bba822e5a247%2Feightball_screenshot.png?1495405756951)
 
 The value passed to the Input control is ignored and a random string is returned in the output.
@@ -35,12 +38,13 @@ To access the WebVI we create a url that matches the endpoint:
 
 [`https://vireo-node-eightball.glitch.me/eightball`](https://vireo-node-eightball.glitch.me/eightball)
 
-Note: Here we ignore the query string parameter named input as we know the WebVI itself will ignore it as well.
-
-To create the required GET request we can paste the URL in the browser URL bar and hit enter. For methods other than GET
-
-When you visit the page you should see a randomly generated result similar to the following:
+When you visit the url in a browser you should see a randomly generated result similar to the following:
 
 ```json
 {"output":"It is certain"}
 ```
+
+Note: Here we ignore the query string parameter named input as we know the WebVI itself will ignore it as well.
+
+Note: For a simple GET request like this example we can test the url by visting it in the browser. For more complex requests, such as requests requiring custom headers or HTTP Methods other than GET, a tool such as [Postman](https://www.getpostman.com/) may be used to test.
+
