@@ -6,6 +6,12 @@ var express = require('express');
 var app = express();
 var fs = require('fs');
 
+// enable Cross Origin Resource Sharing for requests (optional)
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
+});
+
 // load library to measure response time (optional)
 var responseTime = require('response-time');
 app.use(responseTime());
