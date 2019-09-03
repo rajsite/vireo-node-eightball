@@ -1,4 +1,7 @@
-# Vireo Magic 8-Ball
+# Archived
+This repo is archived. Examples of running WebVIs as node.js apps was moved to the WebVICLI experiment in https://github.com/rajsite/webvi-experiments
+
+## Vireo Magic 8-Ball
 [![Running Vireo Magic 8-Ball Demo Link](https://img.shields.io/badge/Details-Demo_Link-green.svg)](https://vireo-node-eightball.glitch.me/eightball)
 [![Running Vireo Magic 8-Ball README Link](https://img.shields.io/badge/Details-README_Link-orange.svg)](https://github.com/rajsite/vireo-node-eightball#vireo-magic-8-ball)
 
